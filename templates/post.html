@@ -41,9 +41,9 @@
           </div>
 
           <!-- Meta -->
-      <p class="meta">Last updated: 
-          <span class="post-time" data-utc="{{ post.updated_at|date:'c' }}"></span>
-      </p>
+          <p class="meta">Last updated: 
+              <span class="post-time" data-utc="{{ post.updated_at|date:'c' }}"></span>
+          </p>
 
         {% endif %}
 
@@ -57,16 +57,20 @@
 </div>
 
 <style>
+/* Wrapper */
 .posts-wrapper {
+  width: 80%;        
   max-width: 1000px;
   margin: 0 auto;
   padding: 0 20px;
+  aspect-ratio: 1/1;
 }
 
+/* Card */
 .post-card {
   background: rgba(255,255,255,0.05);
   backdrop-filter: blur(12px);
-  border-radius: 16px;
+  border-radius: 10px;
   padding: 25px;
   margin-bottom: 30px;
   border: 1px solid rgba(255,255,255,0.1);
@@ -78,23 +82,34 @@
   box-shadow: 0 12px 36px rgba(0,0,0,0.5);
 }
 
+/* Post Title */
+.post-title {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: #fff;
+  text-shadow: 0 0 6px rgba(0,255,0,0.5);
+  text-align: center;
+}
+
+/* Post Row */
 .post-row {
   display: flex;
   gap: 20px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .post-left {
   flex: 1 1 55%;
   max-width: 55%;
 }
+
 .post-left img {
   width: 100%;
-  height: 400px;
+  height: 500px;
   object-fit: cover;
-  border-radius: 14px;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  border-radius: 10px;
   border: 2px solid rgba(255,255,255,0.1);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 .post-left img:hover {
   transform: scale(1.03);
@@ -108,42 +123,17 @@
   flex-direction: column;
 }
 
-.post-title {
-  font-size: 2rem;
-  margin-bottom: 15px;
-  color: #fff;
-  text-shadow: 0 0 6px rgba(0,255,0,0.5);
-}
-
+/* Note Container */
 .note-container {
-    max-height: 400px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-right: 15px;
-
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+  max-height: 500px; 
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 15px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
 }
-
-.note-container::-webkit-scrollbar {
-    display: none; 
-}
-
-.thumbnail-row {
-    display: flex;
-    gap: 12px;
-    margin-top: 15px;
-    overflow-x: auto;
-    overflow-y: hidden; 
-    padding-bottom: 5px;
-
-    scrollbar-width: none;
-    -ms-overflow-style: none; 
-}
-
-.thumbnail-row::-webkit-scrollbar {
-    display: none; 
-}
+.note-container::-webkit-scrollbar { display: none; }
 
 .note {
   font-size: 1rem;
@@ -152,6 +142,18 @@
   text-align: justify;
 }
 
+/* Thumbnail Row */
+.thumbnail-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+  overflow-x: auto;
+  overflow-y: hidden; 
+  padding-bottom: 5px;
+  scrollbar-width: none;
+  -ms-overflow-style: none; 
+}
+.thumbnail-row::-webkit-scrollbar { display: none; }
 
 .thumbnail-row img {
   width: 180px;
@@ -178,36 +180,33 @@
   margin-top: 10px;
 }
 
-/* Responsive */
+
 @media (max-width:900px){
+  .posts-wrapper { width: 90%;}
+  .post-row { flex-direction: row; }
+  .post-left, .post-right { flex: 1 1 50%; max-width: 50%; }
+  .post-left img { height: auto; width: 100%; aspect-ratio: 1/1; }
+  .note-container { max-height: none; overflow-y: auto; margin-top: 15px; }
+  .thumbnail-row img { width: 150px; height: 150px; }
+}
+
+/* Mobile (<600px) */
+@media (max-width:600px){
+  .posts-wrapper { width: 100%; padding: 0; margin: 0; }
   .post-row { flex-direction: column; }
   .post-left, .post-right { flex: 1 1 100%; max-width: 100%; }
-
-  .post-left img { 
-    height: auto; 
-    aspect-ratio: 1 / 1;
-    width: 100%;
-  }
-
-  .note-container { max-height: none; overflow: visible; margin-top: 15px; }
-}
-@media (max-width:600px){
+  .post-left img { height: auto; width: 100%; aspect-ratio: 1/1; }
+  .thumbnail-row { overflow-x: auto; }
   .thumbnail-row img { width: 120px; height: 120px; }
-  .post-title { font-size: 1.2rem; }
-  .note-container { padding: 0; }
+  .note-container { max-height: auto; overflow-y: auto; margin-top: 15px;  }
+  .post-title { font-size: 1.5rem; }
 }
 </style>
 
-<!-- JS -->
 <script>
-// UTC to Local Time
+// UTC → Local Time
 document.querySelectorAll('.post-time').forEach(el => {
-  const utc = el.dataset.utc;
-  const local = new Date(utc);
-  el.textContent = local.toLocaleString(undefined,{ 
-    year:'numeric', month:'long', day:'numeric', 
-    hour:'numeric', minute:'numeric' 
-  });
+    el.textContent = new Date(el.dataset.utc).toLocaleString();
 });
 
 // Thumbnail click to change main image
@@ -228,6 +227,20 @@ document.querySelectorAll('.thumbnail-row').forEach(row => {
   const thumbs = row.querySelectorAll('img');
   if(thumbs.length > 0) thumbs[0].classList.add('active');
 });
+
+// Match note-container height to main image
+function adjustNoteHeights() {
+    document.querySelectorAll('.post-card').forEach(card => {
+        const img = card.querySelector('.post-left img');
+        const note = card.querySelector('.note-container');
+        if(img && note){
+            note.style.maxHeight = img.clientHeight + 'px';
+        }
+    });
+}
+
+window.addEventListener('load', adjustNoteHeights);
+window.addEventListener('resize', adjustNoteHeights);
 </script>
 
 {% endblock %}
